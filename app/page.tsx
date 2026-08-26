@@ -546,15 +546,20 @@ function Overview({
 export default function Home() {
   const [selected, setSelected] = useState("overview");
   const [data, setData] = useState<DashboardData>(initialDashboard);
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     fetch("/api/dashboard", { cache: "no-store" })
       .then((r) => r.json() as Promise<DashboardData>)
       .then((d) => {
         if (d?.categories) setData(d);
       })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, []);
   const categories = data.categories;
+  useEffect(() => {
+    if (!loading && !categories.length) window.location.replace("/admin");
+  }, [loading, categories.length]);
   const summary = useMemo(
     () =>
       categories.map((c) => ({
@@ -569,7 +574,7 @@ export default function Home() {
   );
   const current = categories.find((c) => c.id === selected);
   const pageIcon = current?.icon ?? "▦";
-  if (!categories.length) return <main className="empty-dashboard"><section><img src="/maranhao-motos-logo.jpg" alt="Maranhão Motos"/><p>PAINEL EXECUTIVO • SANTA INÊS</p><h1>Aguardando a primeira planilha</h1><span>Os indicadores aparecerão aqui depois que o arquivo Excel for validado e enviado.</span><a href="/admin">Adicionar planilha</a></section></main>;
+  if (loading || !categories.length) return null;
   const refDate = new Date(`${data.referenceDate}T12:00:00`);
   const referenceDay = refDate.getDate();
   const daysInMonth = new Date(refDate.getFullYear(), refDate.getMonth() + 1, 0).getDate();
