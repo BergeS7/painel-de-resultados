@@ -38,6 +38,36 @@
   font-size: 17px;
 }
 
+.instagram-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  margin-top: 12px;
+  padding: 9px 10px;
+  border: 1px solid #d946ef80;
+  border-radius: 9px;
+  background: linear-gradient(135deg, #833ab4, #e1306c 55%, #f77737);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  text-decoration: none;
+  box-shadow: 0 5px 14px #0003;
+  transition: transform .18s ease, filter .18s ease;
+}
+
+.instagram-button:hover {
+  filter: brightness(1.12);
+  transform: translateY(-1px);
+}
+
+.instagram-button:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+.instagram-button b { font-size: 17px; line-height: 1; }
+
 @media (max-width: 1000px) and (min-width: 701px) {
   .brand-logo { width: 58px; }
   .brand > small { display: none; }
