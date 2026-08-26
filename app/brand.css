@@ -66,7 +66,13 @@
   outline-offset: 2px;
 }
 
-.instagram-button b { font-size: 17px; line-height: 1; }
+.instagram-button img {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
+  border-radius: 5px;
+  object-fit: contain;
+}
 
 @media (max-width: 1000px) and (min-width: 701px) {
   .brand-logo { width: 58px; }
