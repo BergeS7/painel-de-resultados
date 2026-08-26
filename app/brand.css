@@ -67,6 +67,8 @@
   object-fit: contain;
 }
 
+.admin-link{display:block;margin-top:12px;color:#a8c8f0;font-size:10px;font-weight:800;text-decoration:none}.admin-link:hover{color:#fff}
+
 @media (max-width: 1000px) and (min-width: 701px) {
   .brand-logo { width: 58px; }
   .brand > small { display: none; }
