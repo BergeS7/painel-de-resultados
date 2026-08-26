@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
+import "./legend.css";
 
 type Unit = "count" | "money";
 type Metric = {
@@ -347,11 +348,10 @@ function CategoryView({ category, referenceDay, daysInMonth }: { category: Categ
               <h2>Meta x realizado x históricos</h2>
             </div>
             <div className="chart-legend">
-              <i className="l0" />
-              Meta <i className="l1" />
-              Real <i className="l2" />
-              Mês ant. <i className="l3" />
-              Ano ant.
+              <span><i className="l0" />Meta</span>
+              <span><i className="l1" />Real</span>
+              <span><i className="l2" />Mês ant.</span>
+              <span><i className="l3" />Ano ant.</span>
             </div>
           </div>
           <ComparisonChart metrics={category.metrics} />
