@@ -27,3 +27,11 @@ export const defaultDashboard: DashboardPayload = {
     {id:'outros',label:'Outros indicadores',short:'OI',icon:'✦',metrics:[{name:'Pacotes de serviços',target:12,actual:20,previous:null,lastYear:null,unit:'count'},{name:'Kit lubrificação',target:1,actual:0,previous:null,lastYear:null,unit:'count'}]},
   ],
 };
+
+export const emptyDashboard: DashboardPayload = {
+  revenue: 0,
+  ticket: 0,
+  referenceDate: '',
+  updatedAt: '',
+  categories: [],
+};
