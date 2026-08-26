@@ -14,8 +14,20 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://painel-executivo-santa-ines.sergiopredador23.chatgpt.site'),
   title: 'Painel Executivo — Santa Inês',
   description: 'Dashboard executivo de resultados da Maranhão Motos em Santa Inês.',
+  openGraph: {
+    title: 'Painel Executivo — Santa Inês',
+    description: 'Maranhão Motos • Resultados de Agosto 2026',
+    images: ['/og.png'],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Painel Executivo — Santa Inês',
+    description: 'Maranhão Motos • Resultados de Agosto 2026',
+    images: ['/og.png'],
+  },
 };
 
 export default function RootLayout({
