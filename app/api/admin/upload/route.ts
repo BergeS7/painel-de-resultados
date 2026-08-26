@@ -14,7 +14,7 @@ export async function POST(request:Request){
     const payload=await parseDashboardWorkbook(buffer,file.name);
     const stamp=new Date().toISOString().replace(/[:.]/g,'-');
     await Promise.all([
-      put('dashboard/latest.json',JSON.stringify(payload),{access:'public',addRandomSuffix:false,allowOverwrite:true,contentType:'application/json'}),
+      put('dashboard/current.json',JSON.stringify(payload),{access:'public',addRandomSuffix:false,allowOverwrite:true,contentType:'application/json'}),
       put(`dashboard/history/${stamp}.json`,JSON.stringify(payload),{access:'public',addRandomSuffix:false,contentType:'application/json'}),
     ]);
     return Response.json({ok:true,payload});

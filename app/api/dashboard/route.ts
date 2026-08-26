@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic';
 export async function GET(){
   if(!process.env.BLOB_READ_WRITE_TOKEN) return Response.json({...emptyDashboard,storageConfigured:false});
   try{
-    const result=await list({prefix:'dashboard/latest.json',limit:1});
+    const result=await list({prefix:'dashboard/current.json',limit:1});
     if(!result.blobs[0]) return Response.json({...emptyDashboard,storageConfigured:true});
     const response=await fetch(result.blobs[0].url,{cache:'no-store'});
     if(!response.ok) throw new Error('Falha ao ler os dados armazenados.');
