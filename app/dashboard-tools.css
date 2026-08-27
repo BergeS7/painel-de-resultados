@@ -1,0 +1,93 @@
+.dashboard-actions {
+  display: flex;
+  align-items: end;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.period-filter {
+  display: grid;
+  gap: 4px;
+  color: #66758a;
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.period-filter select,
+.print-button {
+  height: 38px;
+  border: 1px solid #dce3ec;
+  border-radius: 9px;
+  background: #fff;
+  color: #142238;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.period-filter select { min-width: 155px; padding: 0 30px 0 10px; }
+.print-button { padding: 0 13px; color: #fff; background: #2268d8; border-color: #2268d8; cursor: pointer; }
+.print-button:hover { background: #1859bd; }
+.reference { min-width: 190px; }
+
+.target-marker {
+  position: absolute;
+  z-index: 2;
+  left: 1px;
+  right: 1px;
+  border-top: 2px dashed #173f73;
+  pointer-events: none;
+}
+
+.bar-well { position: relative; }
+.bar-well .column { position: relative; z-index: 1; opacity: .7; }
+.bar-well .actual-bar { z-index: 3; width: min(46px, 80%); opacity: 1; box-shadow: 0 4px 10px #1422382b; }
+.bar-well .actual-bar.good { background: #15966b; }
+.bar-well .actual-bar.warn { background: #e0a12c; }
+.bar-well .actual-bar.bad { background: #db5461; }
+
+.bar-slot > span {
+  white-space: normal;
+  text-overflow: clip;
+}
+
+.trend-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #e7edf4;
+}
+
+.trend-summary span {
+  padding: 4px 7px;
+  border-radius: 6px;
+  font-size: 8px;
+  font-weight: 800;
+}
+
+.trend-summary .up { color: #087653; background: #e4f7ef; }
+.trend-summary .down { color: #b62f3c; background: #fdebed; }
+
+@media (max-width: 700px) {
+  .topbar { gap: 16px; }
+  .dashboard-actions { justify-content: flex-start; width: 100%; margin-top: 14px; }
+  .period-filter { width: 100%; }
+  .period-filter select { width: 100%; min-height: 44px; }
+  .reference { flex: 1; min-width: 160px; }
+  .print-button { min-height: 44px; }
+  .panel { padding: 15px; }
+  .chart-group { padding-inline: 10px; }
+  .bar-slot { grid-template-rows: 24px 150px 38px; }
+  .bar-well { height: 150px; }
+}
+
+@media print {
+  .dashboard-shell { display: block; }
+  .sidebar, .print-button, .period-filter { display: none !important; }
+  .workspace { max-width: none; padding: 12px; }
+  .panel, .headline-grid article, .chart-group { box-shadow: none; break-inside: avoid; }
+  .dashboard-actions { justify-content: flex-end; }
+}

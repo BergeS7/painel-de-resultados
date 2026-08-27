@@ -228,6 +228,7 @@ type DashboardData = {
   sourceFile?: string;
   categories: Category[];
 };
+type PeriodOption = { referenceDate: string; updatedAt: string };
 const initialDashboard: DashboardData = {
   revenue: 0,
   ticket: 0,
@@ -283,12 +284,20 @@ function MetricCard({ m }: { m: Metric }) {
 }
 
 function ComparisonChart({ metrics }: { metrics: Metric[] }) {
-  const series = ["Meta", "Real", "Mês ant.", "Ano ant."];
+  const series = ["Meta", "Real", "Mês anterior", "Mês do ano anterior"];
+  const variation = (current: number, previous?: number | null) => {
+    if (!previous) return { text: "Sem base para comparação", value: 0 };
+    const value = current / previous - 1;
+    return { text: `${value >= 0 ? "+" : ""}${pct(value)} vs.`, value };
+  };
   return (
     <div className="comparison-chart">
       {metrics.map((m) => {
         const values = [m.target, m.actual, m.previous || 0, m.lastYear || 0],
-          max = Math.max(...values, 1);
+          max = Math.max(...values, 1),
+          rate = m.target ? m.actual / m.target : 0,
+          monthVariation = variation(m.actual, m.previous),
+          yearVariation = variation(m.actual, m.lastYear);
         return (
           <div className="chart-group" key={m.name}>
             <strong>{m.name}</strong>
@@ -297,14 +306,19 @@ function ComparisonChart({ metrics }: { metrics: Metric[] }) {
                 <div className="bar-slot" key={i} title={fmt(v, m.unit)}>
                   <b>{chartFmt(v, m.unit)}</b>
                   <div className="bar-well">
+                    <span className="target-marker" style={{ bottom: `${(m.target / max) * 100}%` }} />
                     <i
-                      className={`column c${i}`}
+                      className={`column ${i === 1 ? `actual-bar ${tone(rate)}` : `c${i}`}`}
                       style={{ height: `${Math.max((v / max) * 100, v ? 3 : 0)}%` }}
                     />
                   </div>
                   <span>{series[i]}</span>
                 </div>
               ))}
+            </div>
+            <div className="trend-summary">
+              <span className={monthVariation.value >= 0 ? "up" : "down"}>{monthVariation.text} mês anterior</span>
+              <span className={yearVariation.value >= 0 ? "up" : "down"}>{yearVariation.text} mês do ano anterior</span>
             </div>
           </div>
         );
@@ -551,15 +565,39 @@ export default function Home() {
   const [selected, setSelected] = useState("overview");
   const [data, setData] = useState<DashboardData>(initialDashboard);
   const [loading, setLoading] = useState(true);
+  const [periods, setPeriods] = useState<PeriodOption[]>([]);
+  const [periodBusy, setPeriodBusy] = useState(false);
   useEffect(() => {
     fetch("/api/dashboard", { cache: "no-store" })
       .then((r) => r.json() as Promise<DashboardData>)
       .then((d) => {
-        if (d?.categories) setData(d);
+        if (d?.categories) {
+          setData(d);
+          setPeriods([{ referenceDate: d.referenceDate, updatedAt: d.updatedAt }]);
+        }
       })
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
+  useEffect(() => {
+    fetch("/api/dashboard/history", { cache: "no-store" })
+      .then((r) => r.json() as Promise<{ periods?: PeriodOption[] }>)
+      .then((result) => {
+        if (result.periods?.length) setPeriods(result.periods);
+      })
+      .catch(() => {});
+  }, []);
+  async function changePeriod(referenceDate: string) {
+    setPeriodBusy(true);
+    try {
+      const response = await fetch(`/api/dashboard/history?date=${encodeURIComponent(referenceDate)}`, { cache: "no-store" });
+      if (!response.ok) throw new Error();
+      const next = await response.json() as DashboardData;
+      if (next.categories?.length) setData(next);
+    } finally {
+      setPeriodBusy(false);
+    }
+  }
   const categories = data.categories;
   useEffect(() => {
     if (!loading && !categories.length) window.location.replace("/admin");
@@ -657,9 +695,22 @@ export default function Home() {
                 : "Dashboard exclusivo da categoria com medição completa e projeção."}
             </p>
           </div>
-          <div className="reference">
-            <span>Atualizado em</span>
-            <strong>{updated}</strong>
+          <div className="dashboard-actions">
+            <label className="period-filter">
+              <span>Período analisado</span>
+              <select value={data.referenceDate} disabled={periodBusy} onChange={(e) => changePeriod(e.target.value)}>
+                {periods.map((period) => (
+                  <option key={period.referenceDate} value={period.referenceDate}>
+                    {new Date(`${period.referenceDate}T12:00:00`).toLocaleDateString("pt-BR", { month: "long", year: "numeric" })}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <div className="reference">
+              <span>Dados de {refDate.toLocaleDateString("pt-BR")}</span>
+              <strong>Atualizado em {updated}</strong>
+            </div>
+            <button className="print-button" onClick={() => window.print()}>Exportar PDF</button>
           </div>
         </header>
         {current ? (
