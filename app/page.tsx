@@ -306,7 +306,10 @@ function ComparisonChart({ metrics }: { metrics: Metric[] }) {
                 <div className="bar-slot" key={i} title={fmt(v, m.unit)}>
                   <b>{chartFmt(v, m.unit)}</b>
                   <div className="bar-well">
-                    <span className="target-marker" style={{ bottom: `${(m.target / max) * 100}%` }} />
+                    <span
+                      className="target-marker"
+                      style={{ bottom: `${Math.max((v / max) * 100, v ? 3 : 0)}%` }}
+                    />
                     <i
                       className={`column ${i === 1 ? `actual-bar ${tone(rate)}` : `c${i}`}`}
                       style={{ height: `${Math.max((v / max) * 100, v ? 3 : 0)}%` }}
