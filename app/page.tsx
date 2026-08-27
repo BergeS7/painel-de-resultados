@@ -251,7 +251,7 @@ const compact = new Intl.NumberFormat("pt-BR", {
 const chartFmt = (v: number, u: Unit) =>
   u === "money" ? `R$ ${compact.format(v)}` : compact.format(v);
 const pct = (v: number) => `${(v * 100).toFixed(1).replace(".", ",")}%`;
-const tone = (v: number) => (v >= 1 ? "good" : v >= 0.85 ? "warn" : "bad");
+const tone = (v: number): "good" | "warn" | "bad" => (v >= 1 ? "good" : v >= 0.85 ? "warn" : "bad");
 
 function MetricCard({ m }: { m: Metric }) {
   const rate = m.target ? m.actual / m.target : 0,
@@ -283,7 +283,7 @@ function MetricCard({ m }: { m: Metric }) {
   );
 }
 
-function ComparisonChart({ metrics }: { metrics: Metric[] }) {
+function ComparisonChart({ metrics, comparisonMetrics, comparisonLabel }: { metrics: Metric[]; comparisonMetrics?: Metric[]; comparisonLabel?: string }) {
   const series = ["Meta", "Real", "Mês anterior", "Mês do ano anterior"];
   const variation = (current: number, previous?: number | null) => {
     if (!previous) return { text: "Sem base para comparação", value: 0 };
@@ -297,22 +297,27 @@ function ComparisonChart({ metrics }: { metrics: Metric[] }) {
           max = Math.max(...values, 1),
           rate = m.target ? m.actual / m.target : 0,
           monthVariation = variation(m.actual, m.previous),
-          yearVariation = variation(m.actual, m.lastYear);
+          yearVariation = variation(m.actual, m.lastYear),
+          comparison = comparisonMetrics?.find((item) => item.name === m.name),
+          periodVariation = variation(m.actual, comparison?.actual);
         return (
           <div className="chart-group" key={m.name}>
             <strong>{m.name}</strong>
             <div className="columns">
               {values.map((v, i) => {
-                const height = Math.max((v / max) * 100, v ? 3 : 0);
+                const height = v === 0 ? 2 : Math.max((v / max) * 100, 3);
                 return (
                 <div
-                  className="bar-slot"
+                  className={`bar-slot ${v === 0 ? "zero" : ""}`}
                   key={i}
                   title={fmt(v, m.unit)}
+                  tabIndex={0}
+                  aria-label={`${series[i]}: ${fmt(v, m.unit)}`}
                   style={{ "--bar-height": `${height}%` } as React.CSSProperties}
                 >
                   <div className="bar-well">
                     <b className="bar-value">{chartFmt(v, m.unit)}</b>
+                    <small className="full-value">{fmt(v, m.unit)}</small>
                     <span className="target-marker" />
                     <i
                       className={`column ${i === 1 ? `actual-bar ${tone(rate)}` : `c${i}`}`}
@@ -327,6 +332,7 @@ function ComparisonChart({ metrics }: { metrics: Metric[] }) {
             <div className="trend-summary">
               <span className={monthVariation.value >= 0 ? "up" : "down"}>{monthVariation.text} mês anterior</span>
               <span className={yearVariation.value >= 0 ? "up" : "down"}>{yearVariation.text} mês do ano anterior</span>
+              {comparison && <span className={periodVariation.value >= 0 ? "up" : "down"}>{periodVariation.text} {comparisonLabel}</span>}
             </div>
           </div>
         );
@@ -335,11 +341,18 @@ function ComparisonChart({ metrics }: { metrics: Metric[] }) {
   );
 }
 
-function CategoryView({ category, referenceDay, daysInMonth }: { category: Category; referenceDay: number; daysInMonth: number }) {
+function CategoryView({ category, referenceDay, daysInMonth, comparisonCategory, comparisonLabel }: { category: Category; referenceDay: number; daysInMonth: number; comparisonCategory?: Category; comparisonLabel?: string }) {
+  const [query, setQuery] = useState("");
+  useEffect(() => setQuery(""), [category.id]);
   const rates = category.metrics.map((m) =>
     m.target ? m.actual / m.target : 0,
   );
   const avg = rates.reduce((a, b) => a + b, 0) / rates.length;
+  const filteredMetrics = category.metrics.filter((m) => m.name.toLocaleLowerCase("pt-BR").includes(query.toLocaleLowerCase("pt-BR")));
+  const statusCounts = rates.reduce((counts, rate) => {
+    counts[tone(rate)] += 1;
+    return counts;
+  }, { good: 0, warn: 0, bad: 0 });
   return (
     <>
       <div className="category-summary">
@@ -367,8 +380,19 @@ function CategoryView({ category, referenceDay, daysInMonth }: { category: Categ
           <span>Baseada em {referenceDay} de {daysInMonth} dias corridos</span>
         </div>
       </div>
+      <div className="status-toolbar">
+        <div className="status-counts" aria-label="Resumo dos indicadores">
+          <span className="good">{statusCounts.good} na meta</span>
+          <span className="warn">{statusCounts.warn} em atenção</span>
+          <span className="bad">{statusCounts.bad} abaixo</span>
+        </div>
+        <label className="metric-search">
+          <span className="sr-only">Filtrar indicadores</span>
+          <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Buscar indicador..." />
+        </label>
+      </div>
       <div className="metric-cards">
-        {category.metrics.map((m) => (
+        {filteredMetrics.map((m) => (
           <MetricCard key={m.name} m={m} />
         ))}
       </div>
@@ -380,7 +404,8 @@ function CategoryView({ category, referenceDay, daysInMonth }: { category: Categ
               <h2>Meta x realizado x históricos</h2>
             </div>
           </div>
-          <ComparisonChart metrics={category.metrics} />
+          <p className="chart-note"><i /> A linha pontilhada acompanha o valor exato de cada coluna. Toque ou passe o mouse para ver o número completo.</p>
+          <ComparisonChart metrics={filteredMetrics} comparisonMetrics={comparisonCategory?.metrics} comparisonLabel={comparisonLabel} />
         </article>
         <article className="panel projection-list">
           <div className="panel-title">
@@ -389,7 +414,7 @@ function CategoryView({ category, referenceDay, daysInMonth }: { category: Categ
               <h2>Projeção por indicador</h2>
             </div>
           </div>
-          {category.metrics.map((m) => {
+          {filteredMetrics.map((m) => {
             const projected = (m.actual / referenceDay) * daysInMonth,
               rate = m.target ? projected / m.target : 0;
             return (
@@ -421,11 +446,11 @@ function CategoryView({ category, referenceDay, daysInMonth }: { category: Categ
                 <th>Atingimento</th>
                 <th>Pendente</th>
                 <th>Mês anterior</th>
-                <th>Ano anterior</th>
+                <th>Mês do ano anterior</th>
               </tr>
             </thead>
             <tbody>
-              {category.metrics.map((m) => (
+              {filteredMetrics.map((m) => (
                 <tr key={m.name}>
                   <td>
                     <strong>{m.name}</strong>
@@ -454,10 +479,12 @@ function Overview({
   summary,
   onSelect,
   data,
+  comparisonData,
 }: {
   summary: Array<Category & { rate: number }>;
   onSelect: (id: string) => void;
   data: DashboardData;
+  comparisonData?: DashboardData | null;
 }) {
   const motos = data.categories.find((c) => c.id === "motos");
   const motosReal = motos?.metrics.reduce((s, m) => s + m.actual, 0) ?? 0;
@@ -472,6 +499,14 @@ function Overview({
           : a,
       data.categories[0].metrics[0],
     );
+  const allMetrics = data.categories.flatMap((category) => category.metrics.map((metric) => ({ ...metric, category: category.label, rate: metric.target ? metric.actual / metric.target : 0 })));
+  const ranked = [...allMetrics].sort((a, b) => b.rate - a.rate);
+  const indicatorCounts = ranked.reduce((counts, item) => {
+    counts[tone(item.rate)] += 1;
+    return counts;
+  }, { good: 0, warn: 0, bad: 0 });
+  const delta = (current: number, previous: number) => previous ? current / previous - 1 : 0;
+  const comparisonMotos = comparisonData?.categories.find((c) => c.id === "motos")?.metrics.reduce((sum, metric) => sum + metric.actual, 0) ?? 0;
   return (
     <>
       <div className="headline-grid">
@@ -499,6 +534,19 @@ function Overview({
           <small>{best.name}</small>
         </article>
       </div>
+      <div className="executive-status" aria-label="Resumo geral dos indicadores">
+        <span className="good"><b>{indicatorCounts.good}</b> metas atingidas</span>
+        <span className="warn"><b>{indicatorCounts.warn}</b> em atenção</span>
+        <span className="bad"><b>{indicatorCounts.bad}</b> abaixo da meta</span>
+      </div>
+      {comparisonData && (
+        <div className="period-comparison-summary">
+          <strong>Comparação com {new Date(`${comparisonData.referenceDate}T12:00:00`).toLocaleDateString("pt-BR", { month: "long", year: "numeric" })}</strong>
+          <span className={delta(data.revenue, comparisonData.revenue) >= 0 ? "up" : "down"}>Receita: {pct(delta(data.revenue, comparisonData.revenue))}</span>
+          <span className={delta(data.ticket, comparisonData.ticket) >= 0 ? "up" : "down"}>Ticket: {pct(delta(data.ticket, comparisonData.ticket))}</span>
+          <span className={delta(motosReal, comparisonMotos) >= 0 ? "up" : "down"}>Motos: {pct(delta(motosReal, comparisonMotos))}</span>
+        </div>
+      )}
       <div className="content-grid">
         <article className="panel performance">
           <div className="panel-title">
@@ -550,6 +598,20 @@ function Overview({
             ))}
         </article>
       </div>
+      <article className="panel ranking-panel">
+        <div className="panel-title">
+          <div><span>RANKING GERAL</span><h2>Indicadores por atingimento</h2></div>
+        </div>
+        <div className="ranking-list">
+          {ranked.map((item, index) => (
+            <div key={`${item.category}-${item.name}`}>
+              <b>{index + 1}</b>
+              <span><strong>{item.name}</strong><small>{item.category}</small></span>
+              <em className={tone(item.rate)}>{pct(item.rate)}</em>
+            </div>
+          ))}
+        </div>
+      </article>
       <div className="area-grid">
         {summary.map((item) => (
           <button key={item.id} onClick={() => onSelect(item.id)}>
@@ -575,6 +637,8 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [periods, setPeriods] = useState<PeriodOption[]>([]);
   const [periodBusy, setPeriodBusy] = useState(false);
+  const [comparisonData, setComparisonData] = useState<DashboardData | null>(null);
+  const [compareBusy, setCompareBusy] = useState(false);
   useEffect(() => {
     fetch("/api/dashboard", { cache: "no-store" })
       .then((r) => r.json() as Promise<DashboardData>)
@@ -606,6 +670,20 @@ export default function Home() {
       setPeriodBusy(false);
     }
   }
+  async function changeComparison(referenceDate: string) {
+    if (!referenceDate) {
+      setComparisonData(null);
+      return;
+    }
+    setCompareBusy(true);
+    try {
+      const response = await fetch(`/api/dashboard/history?date=${encodeURIComponent(referenceDate)}`, { cache: "no-store" });
+      if (!response.ok) throw new Error();
+      setComparisonData(await response.json() as DashboardData);
+    } finally {
+      setCompareBusy(false);
+    }
+  }
   const categories = data.categories;
   useEffect(() => {
     if (!loading && !categories.length) window.location.replace("/admin");
@@ -623,6 +701,10 @@ export default function Home() {
     [categories],
   );
   const current = categories.find((c) => c.id === selected);
+  const comparisonCategory = comparisonData?.categories.find((c) => c.id === selected);
+  const comparisonLabel = comparisonData?.referenceDate
+    ? new Date(`${comparisonData.referenceDate}T12:00:00`).toLocaleDateString("pt-BR", { month: "short", year: "numeric" })
+    : undefined;
   const pageIcon = current?.icon ?? "▦";
   if (loading || !categories.length) return null;
   const refDate = new Date(`${data.referenceDate}T12:00:00`);
@@ -688,6 +770,11 @@ export default function Home() {
         </div>
       </aside>
       <section className="workspace">
+        <div className="print-header">
+          <img src="/maranhao-motos-logo.jpg" alt="Maranhão Motos" />
+          <div><strong>Painel Executivo — Santa Inês</strong><span>Relatório gerado em {new Date().toLocaleString("pt-BR")}</span></div>
+        </div>
+        {(periodBusy || compareBusy) && <div className="loading-feedback" role="status">Atualizando os dados do período...</div>}
         <header className="topbar">
           <div>
             <p className="eyebrow">PAINEL EXECUTIVO • {month}</p>
@@ -714,6 +801,17 @@ export default function Home() {
                 ))}
               </select>
             </label>
+            <label className="period-filter">
+              <span>Comparar com</span>
+              <select value={comparisonData?.referenceDate ?? ""} disabled={compareBusy} onChange={(e) => changeComparison(e.target.value)}>
+                <option value="">Sem comparação</option>
+                {periods.filter((period) => period.referenceDate !== data.referenceDate).map((period) => (
+                  <option key={period.referenceDate} value={period.referenceDate}>
+                    {new Date(`${period.referenceDate}T12:00:00`).toLocaleDateString("pt-BR", { month: "long", year: "numeric" })}
+                  </option>
+                ))}
+              </select>
+            </label>
             <div className="reference">
               <span>Dados de {refDate.toLocaleDateString("pt-BR")}</span>
               <strong>Atualizado em {updated}</strong>
@@ -722,9 +820,9 @@ export default function Home() {
           </div>
         </header>
         {current ? (
-          <CategoryView category={current} referenceDay={referenceDay} daysInMonth={daysInMonth} />
+          <CategoryView category={current} referenceDay={referenceDay} daysInMonth={daysInMonth} comparisonCategory={comparisonCategory} comparisonLabel={comparisonLabel} />
         ) : (
-          <Overview summary={summary} onSelect={setSelected} data={data} />
+          <Overview summary={summary} onSelect={setSelected} data={data} comparisonData={comparisonData} />
         )}
       </section>
     </main>
