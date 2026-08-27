@@ -722,11 +722,14 @@ export default function Home() {
       <aside className="sidebar">
         <div className="brand">
           <img
-            className="brand-logo"
-            src="/maranhao-motos-logo.jpg"
+            className="brand-symbol"
+            src="/maranhao-motos-mark.png"
             alt="Maranhão Motos"
           />
-          <small>Santa Inês</small>
+          <div className="brand-copy">
+            <strong>Maranhão Motos</strong>
+            <small>Santa Inês</small>
+          </div>
         </div>
         <nav aria-label="Categorias do painel">
           <button

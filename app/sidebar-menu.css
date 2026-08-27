@@ -1,0 +1,75 @@
+@media (min-width: 701px) {
+  .sidebar {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    height: 100vh;
+    padding: 14px 14px 12px;
+    overflow: hidden;
+  }
+
+  .sidebar .brand {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    padding: 2px 5px 13px;
+  }
+
+  .brand-symbol {
+    width: 48px;
+    height: 48px;
+    flex: 0 0 48px;
+    object-fit: contain;
+  }
+
+  .brand-copy strong,
+  .brand-copy small { display: block; }
+  .brand-copy strong { color: #fff; font-size: 13px; line-height: 1.15; }
+  .brand-copy small { margin-top: 3px; color: #a8bad0; font-size: 10px; }
+
+  .sidebar nav {
+    min-height: 0;
+    margin-top: 10px;
+    padding-right: 3px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #ffffff2d transparent;
+  }
+
+  .sidebar nav button {
+    min-height: 39px;
+    padding: 6px 9px;
+  }
+
+  .sidebar .nav-icon {
+    width: 30px;
+    height: 29px;
+    flex: 0 0 30px;
+    font-size: 15px;
+  }
+
+  .sidebar-foot {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: end;
+    gap: 4px 10px;
+    min-height: 94px;
+    margin-top: 7px;
+    padding: 9px 5px 0;
+    background: linear-gradient(180deg, transparent, #102c4d 18%);
+  }
+
+  .sidebar-foot > span,
+  .sidebar-foot > strong,
+  .sidebar-foot > small { grid-column: 1 / -1; }
+  .sidebar-foot > strong { overflow-wrap: anywhere; line-height: 1.15; }
+  .sidebar-foot .admin-link { grid-column: 1; margin: 5px 0 0; align-self: center; }
+  .sidebar-foot .instagram-button { grid-column: 2; margin: 0; align-self: end; }
+  .sidebar-foot .instagram-button img { width: 34px; height: 34px; }
+}
+
+@media (min-width: 701px) and (max-width: 1000px) {
+  .sidebar .brand { justify-content: center; padding-inline: 0; }
+  .brand-symbol { width: 42px; height: 42px; flex-basis: 42px; }
+  .brand-copy, .sidebar-foot { display: none; }
+}

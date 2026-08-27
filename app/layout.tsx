@@ -6,6 +6,7 @@ import './brand.css';
 import './chart-layout.css';
 import './dashboard-tools.css';
 import './presentation.css';
+import './sidebar-menu.css';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
