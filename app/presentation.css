@@ -1,0 +1,82 @@
+/* Densidade e tipografia otimizadas para apresentações em telas grandes. */
+@media (min-width: 1001px) {
+  .workspace {
+    max-width: none;
+    padding: 20px 28px 28px;
+  }
+
+  .topbar {
+    align-items: center;
+    margin-bottom: 15px;
+  }
+
+  .topbar h1 { font-size: 30px; }
+  .topbar p { font-size: 13px; line-height: 1.4; }
+  .topbar .eyebrow { font-size: 11px !important; }
+  .page-heading > span { width: 40px; height: 40px; flex-basis: 40px; font-size: 19px; }
+
+  .period-filter { font-size: 10px; }
+  .period-filter select, .print-button { height: 42px; font-size: 12px; }
+  .reference { min-width: 205px; padding: 8px 11px; }
+  .reference span { font-size: 10px; }
+  .reference strong { font-size: 12px; }
+
+  .category-summary {
+    grid-template-columns: auto minmax(280px, 1fr) auto;
+    gap: 16px;
+    padding: 13px 18px;
+    margin-bottom: 10px;
+  }
+
+  .gauge { width: 70px; height: 70px; }
+  .gauge span { font-size: 16px; }
+  .category-summary > div:nth-child(2) > span { font-size: 10px; }
+  .category-summary h2 { margin: 3px 0; font-size: 22px; }
+  .category-summary p { font-size: 12px; }
+  .method-note b { font-size: 11px; }
+  .method-note span { font-size: 10px; }
+
+  .status-toolbar { margin-bottom: 10px; }
+  .status-counts span { padding: 6px 10px; font-size: 11px; }
+  .metric-search input { height: 36px; font-size: 12px; }
+
+  .metric-cards { gap: 12px; margin-bottom: 10px; }
+  .metric-card {
+    min-height: 132px;
+    padding: 14px 18px 13px;
+  }
+
+  .metric-card > div:first-child > span { font-size: 14px; }
+  .metric-card .status { padding: 5px 8px; font-size: 10px; }
+  .metric-card > strong { margin: 12px 0 3px; font-size: 31px; }
+  .metric-card > small { font-size: 11px; }
+  .metric-card > em { top: 54px; right: 18px; font-size: 18px; }
+  .metric-card .metric-track { height: 8px; margin-top: 15px; }
+
+  .detail-grid { gap: 12px; margin-bottom: 10px; }
+  .panel { padding: 16px; }
+  .panel-title { margin-bottom: 13px; }
+  .panel-title span { font-size: 10px; }
+  .panel-title h2 { font-size: 19px; }
+  .chart-note { margin: -3px 0 8px; font-size: 10px; }
+  .comparison-chart { gap: 10px; padding-top: 0; }
+  .chart-group { padding: 12px 11px 9px; }
+  .chart-group > strong { margin-bottom: 6px; font-size: 14px; }
+  .columns { height: 174px; }
+  .bar-slot { grid-template-rows: 144px 30px; height: 174px; }
+  .bar-well { height: 120px; background-size: auto 30px; }
+  .bar-value { font-size: 11px; }
+  .bar-slot > span { font-size: 10px; line-height: 1.2; }
+  .trend-summary { margin-top: 7px; padding-top: 7px; }
+  .trend-summary span { font-size: 9px; }
+
+  .projection-row { padding: 11px 0; }
+  .projection-row strong { font-size: 12px; }
+  .projection-row small { font-size: 10px; }
+  .projection-row > b { font-size: 13px; }
+
+  th { font-size: 10px; }
+  td { font-size: 11px; }
+  .sidebar nav button { font-size: 13px; }
+  .sidebar-foot strong, .sidebar-foot small, .admin-link { font-size: 11px; }
+}
