@@ -1,0 +1,39 @@
+/* Mantém cada valor alinhado à sua barra sem sobrepor os vizinhos. */
+.comparison-chart {
+  justify-content: flex-start;
+  gap: 26px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+}
+
+.chart-group {
+  flex: 1 0 340px;
+  min-width: 340px;
+}
+
+.columns {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(68px, 1fr));
+  align-items: end;
+  justify-content: stretch;
+  gap: 8px;
+}
+
+.column {
+  width: 32px;
+  min-width: 32px;
+  justify-self: center;
+}
+
+@media (max-width: 700px) {
+  .chart-group {
+    flex-basis: 320px;
+    min-width: 320px;
+  }
+
+  .columns {
+    grid-template-columns: repeat(4, minmax(64px, 1fr));
+    gap: 6px;
+  }
+}
