@@ -36,15 +36,19 @@
 
 .bar-slot {
   display: grid;
-  grid-template-rows: 24px 160px 26px;
+  grid-template-rows: 184px 26px;
   align-items: end;
   min-width: 0;
   height: 210px;
   text-align: center;
 }
 
-.bar-slot > b {
-  align-self: center;
+.bar-value {
+  position: absolute;
+  z-index: 4;
+  left: 50%;
+  bottom: calc(var(--bar-height) + 7px);
+  transform: translateX(-50%);
   color: #142238;
   font-size: 9px;
   font-weight: 900;
@@ -88,5 +92,5 @@
 @media (max-width: 700px) {
   .comparison-chart { grid-template-columns: 1fr; }
   .columns { grid-template-columns: repeat(4, minmax(48px, 1fr)); }
-  .bar-slot > b { font-size: 8px; }
+  .bar-value { font-size: 8px; }
 }

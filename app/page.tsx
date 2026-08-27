@@ -302,22 +302,27 @@ function ComparisonChart({ metrics }: { metrics: Metric[] }) {
           <div className="chart-group" key={m.name}>
             <strong>{m.name}</strong>
             <div className="columns">
-              {values.map((v, i) => (
-                <div className="bar-slot" key={i} title={fmt(v, m.unit)}>
-                  <b>{chartFmt(v, m.unit)}</b>
+              {values.map((v, i) => {
+                const height = Math.max((v / max) * 100, v ? 3 : 0);
+                return (
+                <div
+                  className="bar-slot"
+                  key={i}
+                  title={fmt(v, m.unit)}
+                  style={{ "--bar-height": `${height}%` } as React.CSSProperties}
+                >
                   <div className="bar-well">
-                    <span
-                      className="target-marker"
-                      style={{ bottom: `${Math.max((v / max) * 100, v ? 3 : 0)}%` }}
-                    />
+                    <b className="bar-value">{chartFmt(v, m.unit)}</b>
+                    <span className="target-marker" />
                     <i
                       className={`column ${i === 1 ? `actual-bar ${tone(rate)}` : `c${i}`}`}
-                      style={{ height: `${Math.max((v / max) * 100, v ? 3 : 0)}%` }}
+                      style={{ height: `${height}%` }}
                     />
                   </div>
                   <span>{series[i]}</span>
                 </div>
-              ))}
+                );
+              })}
             </div>
             <div className="trend-summary">
               <span className={monthVariation.value >= 0 ? "up" : "down"}>{monthVariation.text} mês anterior</span>

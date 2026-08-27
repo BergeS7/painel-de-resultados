@@ -36,6 +36,7 @@
   z-index: 2;
   left: 1px;
   right: 1px;
+  bottom: var(--bar-height);
   border-top: 2px dashed #173f73;
   pointer-events: none;
 }
@@ -80,7 +81,7 @@
   .print-button { min-height: 44px; }
   .panel { padding: 15px; }
   .chart-group { padding-inline: 10px; }
-  .bar-slot { grid-template-rows: 24px 150px 38px; }
+  .bar-slot { grid-template-rows: 174px 38px; }
   .bar-well { height: 150px; }
 }
 
