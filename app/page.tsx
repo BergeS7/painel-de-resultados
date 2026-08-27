@@ -277,6 +277,7 @@ function MetricCard({ m }: { m: Metric }) {
 }
 
 function ComparisonChart({ metrics }: { metrics: Metric[] }) {
+  const series = ["Meta", "Real", "Mês ant.", "Ano ant."];
   return (
     <div className="comparison-chart">
       {metrics.map((m) => {
@@ -284,18 +285,18 @@ function ComparisonChart({ metrics }: { metrics: Metric[] }) {
           max = Math.max(...values, 1);
         return (
           <div className="chart-group" key={m.name}>
+            <strong>{m.name}</strong>
             <div className="columns">
               {values.map((v, i) => (
-                <div
-                  key={i}
-                  className={`column c${i}`}
-                  style={{ height: `${Math.max((v / max) * 100, v ? 4 : 0)}%` }}
-                >
-                  <span>{fmt(v, m.unit)}</span>
+                <div className="comparison-row" key={i}>
+                  <span className="series-name"><i className={`l${i}`} />{series[i]}</span>
+                  <span className="comparison-track">
+                    <i className={`c${i}`} style={{ width: `${Math.max((v / max) * 100, v ? 3 : 0)}%` }} />
+                  </span>
+                  <b>{fmt(v, m.unit)}</b>
                 </div>
               ))}
             </div>
-            <strong>{m.name}</strong>
           </div>
         );
       })}
@@ -346,12 +347,6 @@ function CategoryView({ category, referenceDay, daysInMonth }: { category: Categ
             <div>
               <span>COMPARAÇÃO DIRETA</span>
               <h2>Meta x realizado x históricos</h2>
-            </div>
-            <div className="chart-legend">
-              <span><i className="l0" />Meta</span>
-              <span><i className="l1" />Real</span>
-              <span><i className="l2" />Mês ant.</span>
-              <span><i className="l3" />Ano ant.</span>
             </div>
           </div>
           <ComparisonChart metrics={category.metrics} />
