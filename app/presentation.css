@@ -22,24 +22,18 @@
   .reference strong { font-size: 12px; }
 
   .category-summary {
-    grid-template-columns: auto minmax(360px, 1fr) auto;
-    gap: 11px;
-    padding: 6px 14px;
-    margin-bottom: 6px;
+    grid-template-columns: auto minmax(280px, 1fr) auto;
+    gap: 13px;
+    padding: 9px 16px;
+    margin-bottom: 8px;
   }
 
-  .gauge { width: 46px; height: 46px; }
-  .gauge::before { inset: 5px; }
-  .gauge span { font-size: 12px; }
-  .category-summary > div:nth-child(2) {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    align-items: center;
-    column-gap: 12px;
-  }
-  .category-summary > div:nth-child(2) > span { grid-column: 1 / -1; font-size: 9px; }
-  .category-summary h2 { margin: 1px 0; font-size: 17px; }
-  .category-summary p { margin-left: 0; font-size: 11px; }
+  .gauge { width: 56px; height: 56px; }
+  .gauge::before { inset: 6px; }
+  .gauge span { font-size: 14px; }
+  .category-summary > div:nth-child(2) > span { font-size: 10px; }
+  .category-summary h2 { margin: 2px 0; font-size: 19px; }
+  .category-summary p { font-size: 12px; }
   .method-note b { font-size: 11px; }
   .method-note span { font-size: 10px; }
 
@@ -48,42 +42,35 @@
   .metric-search input { height: 36px; font-size: 12px; }
 
   .metric-cards {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 8px;
-    margin-bottom: 8px;
+    grid-template-columns: repeat(auto-fit, minmax(430px, 1fr));
+    gap: 10px;
+    margin-bottom: 10px;
   }
   .metric-card {
     display: grid;
-    grid-template-columns: minmax(145px, 1.1fr) auto minmax(120px, auto) minmax(110px, 1fr) auto;
-    grid-template-rows: auto;
+    grid-template-columns: auto minmax(125px, auto) minmax(120px, 1fr) auto;
+    grid-template-rows: auto auto;
     align-items: center;
-    min-height: 62px;
-    padding: 8px 13px;
-    column-gap: 12px;
-    row-gap: 0;
+    min-height: 88px;
+    padding: 11px 15px;
+    column-gap: 14px;
+    row-gap: 9px;
   }
 
-  .metric-card > div:first-child {
-    grid-column: 1;
-    display: flex;
-    align-items: flex-start;
-    flex-direction: column;
-    justify-content: center;
-    gap: 5px;
-  }
+  .metric-card > div:first-child { grid-column: 1 / -1; }
   .metric-card > div:first-child > span { font-size: 13px; }
-  .metric-card .status { padding: 4px 7px; font-size: 9px; }
-  .metric-card > strong { grid-column: 2; margin: 0; font-size: 25px; }
-  .metric-card > small { grid-column: 3; font-size: 10px; }
+  .metric-card .status { padding: 5px 8px; font-size: 10px; }
+  .metric-card > strong { grid-column: 1; margin: 0; font-size: 28px; }
+  .metric-card > small { grid-column: 2; font-size: 11px; }
   .metric-card > em {
     position: static;
-    grid-column: 5;
+    grid-column: 4;
     justify-self: end;
     padding: 5px 7px;
     font-size: 16px;
   }
   .metric-card .metric-track {
-    grid-column: 4;
+    grid-column: 3;
     height: 8px;
     margin: 0;
   }
@@ -114,8 +101,4 @@
   td { font-size: 11px; }
   .sidebar nav button { font-size: 13px; }
   .sidebar-foot strong, .sidebar-foot small, .admin-link { font-size: 11px; }
-}
-
-@media (min-width: 1001px) and (max-width: 1250px) {
-  .metric-cards { grid-template-columns: 1fr; }
 }
