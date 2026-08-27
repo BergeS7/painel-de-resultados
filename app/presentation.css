@@ -23,15 +23,16 @@
 
   .category-summary {
     grid-template-columns: auto minmax(280px, 1fr) auto;
-    gap: 16px;
-    padding: 13px 18px;
-    margin-bottom: 10px;
+    gap: 13px;
+    padding: 9px 16px;
+    margin-bottom: 8px;
   }
 
-  .gauge { width: 70px; height: 70px; }
-  .gauge span { font-size: 16px; }
+  .gauge { width: 56px; height: 56px; }
+  .gauge::before { inset: 6px; }
+  .gauge span { font-size: 14px; }
   .category-summary > div:nth-child(2) > span { font-size: 10px; }
-  .category-summary h2 { margin: 3px 0; font-size: 22px; }
+  .category-summary h2 { margin: 2px 0; font-size: 19px; }
   .category-summary p { font-size: 12px; }
   .method-note b { font-size: 11px; }
   .method-note span { font-size: 10px; }
@@ -40,18 +41,39 @@
   .status-counts span { padding: 6px 10px; font-size: 11px; }
   .metric-search input { height: 36px; font-size: 12px; }
 
-  .metric-cards { gap: 12px; margin-bottom: 10px; }
+  .metric-cards {
+    grid-template-columns: repeat(auto-fit, minmax(430px, 1fr));
+    gap: 10px;
+    margin-bottom: 10px;
+  }
   .metric-card {
-    min-height: 132px;
-    padding: 14px 18px 13px;
+    display: grid;
+    grid-template-columns: auto minmax(125px, auto) minmax(120px, 1fr) auto;
+    grid-template-rows: auto auto;
+    align-items: center;
+    min-height: 88px;
+    padding: 11px 15px;
+    column-gap: 14px;
+    row-gap: 9px;
   }
 
-  .metric-card > div:first-child > span { font-size: 14px; }
+  .metric-card > div:first-child { grid-column: 1 / -1; }
+  .metric-card > div:first-child > span { font-size: 13px; }
   .metric-card .status { padding: 5px 8px; font-size: 10px; }
-  .metric-card > strong { margin: 12px 0 3px; font-size: 31px; }
-  .metric-card > small { font-size: 11px; }
-  .metric-card > em { top: 54px; right: 18px; font-size: 18px; }
-  .metric-card .metric-track { height: 8px; margin-top: 15px; }
+  .metric-card > strong { grid-column: 1; margin: 0; font-size: 28px; }
+  .metric-card > small { grid-column: 2; font-size: 11px; }
+  .metric-card > em {
+    position: static;
+    grid-column: 4;
+    justify-self: end;
+    padding: 5px 7px;
+    font-size: 16px;
+  }
+  .metric-card .metric-track {
+    grid-column: 3;
+    height: 8px;
+    margin: 0;
+  }
 
   .detail-grid { gap: 12px; margin-bottom: 10px; }
   .panel { padding: 16px; }
