@@ -243,6 +243,12 @@ const brl = new Intl.NumberFormat("pt-BR", {
 });
 const fmt = (v: number, u: Unit) =>
   u === "money" ? brl.format(v) : nf.format(v);
+const compact = new Intl.NumberFormat("pt-BR", {
+  notation: "compact",
+  maximumFractionDigits: 1,
+});
+const chartFmt = (v: number, u: Unit) =>
+  u === "money" ? `R$ ${compact.format(v)}` : compact.format(v);
 const pct = (v: number) => `${(v * 100).toFixed(1).replace(".", ",")}%`;
 const tone = (v: number) => (v >= 1 ? "good" : v >= 0.85 ? "warn" : "bad");
 
@@ -288,12 +294,15 @@ function ComparisonChart({ metrics }: { metrics: Metric[] }) {
             <strong>{m.name}</strong>
             <div className="columns">
               {values.map((v, i) => (
-                <div className="comparison-row" key={i}>
-                  <span className="series-name"><i className={`l${i}`} />{series[i]}</span>
-                  <span className="comparison-track">
-                    <i className={`c${i}`} style={{ width: `${Math.max((v / max) * 100, v ? 3 : 0)}%` }} />
-                  </span>
-                  <b>{fmt(v, m.unit)}</b>
+                <div className="bar-slot" key={i} title={fmt(v, m.unit)}>
+                  <b>{chartFmt(v, m.unit)}</b>
+                  <div className="bar-well">
+                    <i
+                      className={`column c${i}`}
+                      style={{ height: `${Math.max((v / max) * 100, v ? 3 : 0)}%` }}
+                    />
+                  </div>
+                  <span>{series[i]}</span>
                 </div>
               ))}
             </div>
