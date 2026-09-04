@@ -1,11 +1,11 @@
 import { list } from "@vercel/blob";
-import type { DashboardPayload } from "../../../../lib/dashboard-data";
+import { defaultDashboard, type DashboardPayload } from "../../../../lib/dashboard-data";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
   if (!process.env.BLOB_READ_WRITE_TOKEN) {
-    return Response.json({ periods: [] }, { headers: { "Cache-Control": "no-store" } });
+    return Response.json({ periods: [{ referenceDate: defaultDashboard.referenceDate, updatedAt: defaultDashboard.updatedAt }] }, { headers: { "Cache-Control": "no-store" } });
   }
 
   try {
@@ -24,7 +24,8 @@ export async function GET(request: Request) {
       .map((item) => item.value)
       .filter((item) => item.referenceDate && item.categories?.length)
       .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
-    const unique = [...new Map(dashboards.map((item) => [item.referenceDate, item])).values()];
+    const unique = [...new Map([defaultDashboard, ...dashboards].map((item) => [item.referenceDate, item])).values()]
+      .sort((a, b) => b.referenceDate.localeCompare(a.referenceDate));
 
     if (requestedDate) {
       const dashboard = unique.find((item) => item.referenceDate === requestedDate);
@@ -37,6 +38,6 @@ export async function GET(request: Request) {
       periods: unique.map(({ referenceDate, updatedAt }) => ({ referenceDate, updatedAt })),
     }, { headers: { "Cache-Control": "no-store" } });
   } catch {
-    return Response.json({ periods: [] }, { headers: { "Cache-Control": "no-store" } });
+    return Response.json({ periods: [{ referenceDate: defaultDashboard.referenceDate, updatedAt: defaultDashboard.updatedAt }] }, { headers: { "Cache-Control": "no-store" } });
   }
 }
